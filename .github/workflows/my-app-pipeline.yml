@@ -27,9 +27,9 @@ jobs:
         run: python -m pytest test/unit -v
       - name: prueba
         run: |
-          echo "$SEM_VERSION"
-          echo "$IMAGE_NAME"
-          echo "$BRANCH"
+          echo "$env:$SEM_VERSION"
+          echo "$env:$IMAGE_NAME"
+          echo "$env:$BRANCH"
 
   ## 🔧 2.
   Build:
@@ -42,9 +42,9 @@ jobs:
       - name: prueba
         run: |
           dir
-          echo "$SEM_VERSION"
-          echo "$IMAGE_NAME"
-          echo "$BRANCH"
+          echo "$env:$SEM_VERSION"
+          echo "$env:$IMAGE_NAME"
+          echo "$env:$BRANCH"
 
   ## 🚀 3.
   deploy-dev:
