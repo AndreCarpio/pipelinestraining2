@@ -42,9 +42,9 @@ jobs:
       - name: prueba
         run: |
           dir
-          echo "SEM_VERSION: $SEM_VERSION"
-          echo "IMAGE_NAME: $IMAGE_NAME"
-          echo "BRANCH: $BRANCH"
+          echo "$SEM_VERSION"
+          echo "$IMAGE_NAME"
+          echo "$BRANCH"
 
   ## 🚀 3.
   deploy-dev:
