@@ -32,13 +32,16 @@ jobs:
     needs: Static-codecheck
 
     steps:
-      #- name: Checkout code
-      #  uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       - name: build image
-        run: docker build -t "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION" .
-
+        run: |
+          $tag = "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION"
+          docker build -t $tag .
       - name: push registry
-        run: docker push "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION"
+        run: |
+          $tag = "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION"
+          docker push "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION"
 
   ## 🚀 3.
   deploy-dev:
