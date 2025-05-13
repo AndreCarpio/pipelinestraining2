@@ -1,38 +1,56 @@
 name: CI
 
 on:
-  # push:
-  #   branches: [ "develop", "main" ]
-  # pull_request:
-  #   branches: [ "develop", "main" ]
+  push:
+    branches: ["andreCarpio_p2_dev", "andreCarpio_p2_base"]
+  pull_request:
+    branches: ["andreCarpio_p2_dev", "andreCarpio_p2_base"]
 
   workflow_dispatch:
 
 env:
-  SEM_VERSION: ""
-  IMAGE_NAME: ""
+  SEM_VERSION: ${{github.run_id}}
+  IMAGE_NAME: "restapp"
+  BRANCH: ${GITHUB_REF_NAME}
 
 jobs:
   ## 🔧 1.
   Static-codecheck:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout code
+      - name: Get repository
         uses: actions/checkout@v3
+      - name: Get dependencies
+        run: pip install --requirement requirements.txt
+      - name: Run Unit Tests
+        run: python -m pytest test/unit -v
+      - name: Set BRANCH env var
+        run: echo "BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+      - name: prueba
+        run: |
+          echo "SEM_VERSION: $SEM_VERSION"
+          echo "IMAGE_NAME: $IMAGE_NAME"
+          echo "BRANCH: $BRANCH"
 
   ## 🔧 2.
   Build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: Static-codecheck
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      #- name: Checkout code
+      #  uses: actions/checkout@v3
+      - name: prueba
+        run: |
+          dir
+          echo "SEM_VERSION: $SEM_VERSION"
+          echo "IMAGE_NAME: $IMAGE_NAME"
+          echo "BRANCH: $BRANCH"
 
   ## 🚀 3.
   deploy-dev:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: Build
     environment:
       name: Develop
@@ -44,7 +62,7 @@ jobs:
 
   ## 🚀 4.
   deploy-prod:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: deploy-dev
     environment:
       name: Production
