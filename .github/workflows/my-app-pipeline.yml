@@ -32,8 +32,6 @@ jobs:
     needs: Static-codecheck
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
       - name: build image
         run: |
           if ($env:BRANCH -eq "andreCarpio_p2_base") {
@@ -46,7 +44,16 @@ jobs:
           $tag = "andrecarpio/$env:IMAGE_NAME:$suffix-1.0.$env:SEM_VERSION"
           docker build -t $tag .
       - name: push registry
-        run: docker push $tag
+        run: |
+          if ($env:BRANCH -eq "andreCarpio_p2_base") {
+            $suffix = "base"
+          } elseif ($env:BRANCH -eq "andreCarpio_p2_dev") {
+            $suffix = "dev"
+          } else {
+            $suffix = "$env:BRANCH"
+          }
+          $tag = "andrecarpio/$env:IMAGE_NAME:$suffix-1.0.$env:SEM_VERSION"
+          docker push $tag
 
   ## 🚀 3.
   deploy-dev:
