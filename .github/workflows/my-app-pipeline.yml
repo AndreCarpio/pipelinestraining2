@@ -11,6 +11,7 @@ on:
 env:
   SEM_VERSION: ${{github.run_id}}
   IMAGE_NAME: "restapp"
+  BRANCH: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   ## 🔧 1.
@@ -24,8 +25,6 @@ jobs:
         run: pip install --requirement requirements.txt
       - name: Run Unit Tests
         run: python -m pytest test/unit -v
-      - name: Set BRANCH env var
-        run: echo "BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
       - name: prueba
         run: |
           echo "$SEM_VERSION"
