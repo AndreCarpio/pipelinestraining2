@@ -78,6 +78,8 @@ jobs:
           echo "DOCKER_TAG=$tag" >> $env:GITHUB_ENV
       - name: Start services
         run: docker compose -f compose.yaml up -d --force-recreate
+      - name: Wait before test
+        run: Start-Sleep -Seconds 20
 
       - name: Integration tests
         run: python -m pytest test/integration -v

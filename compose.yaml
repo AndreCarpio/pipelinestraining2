@@ -1,5 +1,7 @@
 services:
   restapp:
+    depends_on:
+      - redisService
     image: ${DOCKER_TAG}
     container_name: restapp
     restart: always
