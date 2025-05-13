@@ -25,11 +25,6 @@ jobs:
         run: pip install --requirement requirements.txt
       - name: Run Unit Tests
         run: python -m pytest test/unit -v
-      - name: prueba
-        run: |
-          echo "$env:SEM_VERSION"
-          echo "$env:IMAGE_NAME"
-          echo "$env:BRANCH"
 
   ## 🔧 2.
   Build:
@@ -39,12 +34,11 @@ jobs:
     steps:
       #- name: Checkout code
       #  uses: actions/checkout@v3
-      - name: prueba
-        run: |
-          dir
-          echo "$env:SEM_VERSION"
-          echo "$env:IMAGE_NAME"
-          echo "$env:BRANCH"
+      - name: build image
+        run: docker build -t "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION" .
+
+      - name: push registry
+        run: docker push "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION"
 
   ## 🚀 3.
   deploy-dev:
