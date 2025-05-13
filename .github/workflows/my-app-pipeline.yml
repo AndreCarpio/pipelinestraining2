@@ -36,12 +36,12 @@ jobs:
         uses: actions/checkout@v3
       - name: build image
         run: |
-          $tag = "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION"
+          $tag = "andrecarpio/$env:IMAGE_NAME:$env:BRANCH.ToLower()-1.0.$env:SEM_VERSION"
           docker build -t $tag .
       - name: push registry
         run: |
-          $tag = "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION"
-          docker push "andrecarpio/$env:IMAGE_NAME:$env:BRANCH-1.0.$env:SEM_VERSION"
+          $tag = "andrecarpio/$env:IMAGE_NAME:$env:BRANCH.ToLower()-1.0.$env:SEM_VERSION"
+          docker push $tag
 
   ## 🚀 3.
   deploy-dev:
