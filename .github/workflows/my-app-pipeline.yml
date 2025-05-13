@@ -9,8 +9,9 @@ on:
   workflow_dispatch:
 
 env:
-  SEM_VERSION: ""
-  IMAGE_NAME: ""
+  SEM_VERSION: ${{github.run_id}}
+  IMAGE_NAME: "restapp"
+  BRANCH: ${{ (github.head_ref || github.ref_name) }}
 
 jobs:
   ## 🔧 1.
@@ -24,4 +25,93 @@ jobs:
         run: pip install --requirement requirements.txt
       - name: Run Unit Tests
         run: python -m pytest test/unit -v
-      
+
+  ## 🔧 2.
+  Build:
+    runs-on: self-hosted
+    needs: Static-codecheck
+
+    steps:
+      - name: build image
+        run: |
+          if ($env:BRANCH -eq "andreCarpio_p2_base") {
+            $suffix = "base"
+          } elseif ($env:BRANCH -eq "andreCarpio_p2_dev") {
+            $suffix = "dev"
+          } else {
+            $suffix = "$env:BRANCH"
+          }
+          $tag = "andrecarpio/$env:IMAGE_NAME:$suffix-1.0.$env:SEM_VERSION"
+          docker build -t $tag .
+      - name: push registry
+        run: |
+          if ($env:BRANCH -eq "andreCarpio_p2_base") {
+            $suffix = "base"
+          } elseif ($env:BRANCH -eq "andreCarpio_p2_dev") {
+            $suffix = "dev"
+          } else {
+            $suffix = "$env:BRANCH"
+          }
+          $tag = "andrecarpio/$env:IMAGE_NAME:$suffix-1.0.$env:SEM_VERSION"
+          docker push $tag
+
+  ## 🚀 3.
+  deploy-dev:
+    runs-on: self-hosted
+    needs: Build
+    environment:
+      name: Develop
+      url: http://localhost:5000
+
+    steps:
+      - name: Set Docker tag
+        run: |
+          if ($env:BRANCH -eq "andreCarpio_p2_base") {
+            $suffix = "base"
+          } elseif ($env:BRANCH -eq "andreCarpio_p2_dev") {
+            $suffix = "dev"
+          } else {
+            $suffix = "unknown"
+          }
+
+          $tag = "andrecarpio/$env:IMAGE_NAME:$suffix-1.0.$env:SEM_VERSION"
+          echo "DOCKER_TAG=$tag" >> $env:GITHUB_ENV
+      - name: Start services
+        run: docker compose -f compose.yaml up -d --force-recreate
+
+      - name: Integration tests
+        run: docker exec restapp sh -c "python -m pytest test/integration -v"
+
+      - name: stop services
+        run: docker compose -f compose.yaml down
+
+  ## 🚀 4.
+  deploy-prod:
+    runs-on: self-hosted
+    needs: deploy-dev
+    if: github.ref == 'refs/heads/andreCarpio_p2_base'
+    environment:
+      name: Production
+      url: http://localhost:5000
+
+    steps:
+      - name: Set Docker tag
+        run: |
+          if ($env:BRANCH -eq "andreCarpio_p2_base") {
+            $suffix = "base"
+          } elseif ($env:BRANCH -eq "andreCarpio_p2_dev") {
+            $suffix = "dev"
+          } else {
+            $suffix = "unknown"
+          }
+
+          $tag = "andrecarpio/$env:IMAGE_NAME:$suffix-1.0.$env:SEM_VERSION"
+          echo "DOCKER_TAG=$tag" >> $env:GITHUB_ENV
+      - name: Start services
+        run: docker compose -f compose.yaml up -d --force-recreate
+
+      - name: Integration tests
+        run: docker exec restapp sh -c "python -m pytest test/integration -v"
+
+      - name: stop services
+        run: docker compose -f compose.yaml down
