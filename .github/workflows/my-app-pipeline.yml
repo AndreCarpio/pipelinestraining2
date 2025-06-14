@@ -83,7 +83,7 @@ jobs:
         run: |
           docker run --rm `
             --add-host "restapp:127.0.0.1" `
-            -v "${PWD}:/etc/newman" `
+            -v "$(Get-Location):/etc/newman"`
             postman/newman run "test/collection.json"
         shell: pwsh
 
