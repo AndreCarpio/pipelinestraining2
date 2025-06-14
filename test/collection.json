@@ -12,11 +12,9 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:5000/",
+          "raw": "http://host.docker.internal:5000",
           "protocol": "http",
-          "host": [
-            "localhost"
-          ],
+          "host": ["host.docker.internal"],
           "port": "5000",
           "path": [
             ""
