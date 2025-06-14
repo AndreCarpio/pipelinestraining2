@@ -15,5 +15,6 @@ docker run --name "redisService" -p "6379:6379" -d redis:alpine
 $redisIP = (docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' redisService)[1]
 docker stop "restapp"
 docker rm  "restapp"
-docker run --name "restapp" --add-host "redis:$redisIP" -p "5000:5000" -d restapp:1.0.0
+docker run --name "restapp" --add-host "redisServiceS:$redisIP" -p "5000:5000" -d restapp:1.0.0
 docker exec -it restapp sh -c "python -m pytest test/integration -v"
+docker run --rm --add-host "restapp:localhost:5000" -v "${PWD}:/etc/newman" postman/newman run "test/collection.json"
