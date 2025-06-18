@@ -1,0 +1,9 @@
+config:
+  target: 'http://host.docker.internal:5000'
+  phases:
+    - duration: 30
+      arrivalRate: 5
+scenarios:
+  - flow:
+      - get:
+          url: "/posts/1"

@@ -79,8 +79,11 @@ jobs:
       - name: Start services
         run: docker compose -f compose.yaml up -d --force-recreate
 
-      - name: Integration tests
-        run: docker exec restapp sh -c "python -m pytest test/integration -v"
+      - name: Integration tests Whit Postman Newman
+        run: docker run --rm  -v "${PWD}:/etc/newman" postman/newman run "test/collection.json"
+
+      - name: Implement Artillery.io
+        run: docker run -v "$(pwd):/app"  artilleryio/artillery run "test/test.yml"
 
       - name: stop services
         run: docker compose -f compose.yaml down
