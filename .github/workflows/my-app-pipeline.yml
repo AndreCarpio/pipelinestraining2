@@ -83,7 +83,7 @@ jobs:
         run: docker run --rm  -v "${PWD}:/etc/newman" postman/newman run "test/collection.json"
 
       - name: Implement Artillery.io
-        run: docker run --rm -v "${pwd}:/app" -w /app artilleryio/artillery run "test.yml"
+        run: docker run --rm -v "$(pwd):/app" -w /app artilleryio/artillery run "test.yml"
 
       - name: stop services
         run: docker compose -f compose.yaml down
