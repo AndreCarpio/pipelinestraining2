@@ -80,10 +80,10 @@ jobs:
         run: docker compose -f compose.yaml up -d --force-recreate
 
       - name: Integration tests Whit Postman Newman
-        run: docker run --rm  -v "$(pwd):/etc/newman" postman/newman run "etc/newman/collection.json"
+        run: docker run --rm  -v "${PWD}:/etc/newman" postman/newman run "/etc/newman/collection.json"
 
       - name: Implement Artillery.io
-        run: docker run --rm -v "$(pwd):/app" -w /app artilleryio/artillery run "test.yml"
+        run: docker run --rm -v "${PWD}:/app" -w /app artilleryio/artillery run "test.yml"
 
       - name: stop services
         run: docker compose -f compose.yaml down
